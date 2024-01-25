@@ -1,5 +1,7 @@
 <script>
+import User from './components/User.vue'
   export default {
+    components: { User },
     data() {
       return {
         users: [],
@@ -13,8 +15,11 @@
         this.users.push({
           name: this.userName,
           pass: this.userPass,
-          emai: this.userEmail
+          email: this.userEmail
         })
+      },
+      deleteUser(index) {
+        this.users.splice(index, 1);
       }
     }
   }
@@ -27,6 +32,7 @@
   <p className="error"></p>
   <button @click="sendData()">Отправить</button>
   <p>{{ users }}</p>
+  <User v-for="(el, index) in users" :key="index" :user="el" :index="index" :deleteUser="deleteUser"/>
 </template>
 
 <style scoped>
