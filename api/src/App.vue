@@ -1,8 +1,30 @@
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      city: ""
+      city: "",
+      error: "",
+      info: null
+    }
+  },
+  computed: {
+    cityName() {
+      return "<" + this.city + ">"
+    }
+  },
+  methods: {
+    getWeather() {
+      if(this.city.trim().length < 2) {
+        this.error = "Название должно быть больше одного символа"
+        return false
+      }
+
+      this.error = ""
+
+      axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&appid=ac9881ee6ec3edaea9338edadb0aac75`)
+        .then(res => (this.info = res.data.main.temp))
     }
   }
 }
@@ -11,9 +33,12 @@ export default {
 <template>
   <div class="wrapper">
     <h1>Погодное приложение</h1>
-    <p>Узнать погоду в {{ city == "" ? "вашем городе" : city }}</p>
+    <p>Узнать погоду в {{ city == "" ? "вашем городе" : cityName }}</p>
     <input type="text" v-model="city" placeholder="Город">
-    <button v-show="city != ''">Получить погоду</button>
+    <button v-if="city != ''" @click="getWeather()">Получить погоду</button>
+    <button disabled v-else>Введите название города</button>
+    <p class="error">{{ error }}</p>
+    <p v-show="info != null">{{ info }}</p>
   </div>
 </template>
 
@@ -54,5 +79,13 @@ export default {
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
+}
+.wrapper button:disabled {
+  background: rgb(212, 127, 0);
+  cursor: not-allowed;
+}
+
+.error {
+  color: red;
 }
 </style>
